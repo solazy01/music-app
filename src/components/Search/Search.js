@@ -1,7 +1,7 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { useState } from "react";
 
-export default function Search({ onChange }) {
+export default function Search({ onChange, value }) {
   const [searchValue, setSearchValue] = useState("");
 
   const searchFieldHandler = (event) => {
@@ -15,26 +15,32 @@ export default function Search({ onChange }) {
       style={{
         display: "flex",
         justifyContent: "center",
+        alignItems: "center",
       }}
     >
-      <div style={{ flexDirection: "column" }}>
-        <div style={{ padding: "10px" }}>
-          <TextField
-            label=""
-            type="search"
-            variant="outlined"
-            sx={{ width: "60vw" }}
-            onChange={searchFieldHandler}
-          ></TextField>
-        </div>
-        <Button
-          onClick={searchButtonHandler}
-          variant="contained"
-          sx={{ width: "10%" }}
-        >
-          Search
-        </Button>
+      <div style={{ padding: "10px", display: "flex" }}>
+        <TextField
+          size="small"
+          label=""
+          placeholder={value}
+          type="search"
+          variant="outlined"
+          sx={{ width: "40vw" }}
+          onChange={searchFieldHandler}
+        ></TextField>
       </div>
+      <Button
+        onClick={searchButtonHandler}
+        variant="contained"
+        color="error"
+        sx={{
+          width: "10vw",
+          color: "black",
+          fontWeight: "bold",
+        }}
+      >
+        Search
+      </Button>
     </div>
   );
 }

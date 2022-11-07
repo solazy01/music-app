@@ -1,11 +1,13 @@
-import { Box, Button, Divider, Typography } from "@mui/material";
+import { Box, Button, Divider, Link, Typography } from "@mui/material";
 import Search from "../Search/Search";
 import { useEffect, useState } from "react";
 import musicDb from "../../services/api.service";
+import { useNavigate } from "react-router-dom";
 
 const Main = () => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
+  const [searched, setSearched] = useState(false);
 
   const getSearch = async (searchStr) => {
     const url = `/v2/search?query=${searchStr}`;
@@ -13,35 +15,81 @@ const Main = () => {
     setData(resp.data.result);
     console.log(resp.data.result);
   };
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (search) getSearch(search);
   }, [search]);
 
   return (
-    <div style={{ padding: "10px", display: "flex", flexDirection: "column" }}>
-      <div style={{ justifyContent: "center" }}>
-        <Box
-          component="img"
-          alt="YouTube Music logo"
-          src="https://upload.wikimedia.org/wikipedia/commons/d/d8/YouTubeMusic_Logo.png"
-          sx={{ width: "200px", height: "200px" }}
-        ></Box>
-      </div>
-      <Typography variant="h3">YouTube Music Search</Typography>
-      <div style={{ paddingBottom: "15px" }}>
-        <Search
-          onChange={(search) => {
-            setSearch(search);
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        padding: "10px 10vw 0 10vw",
+        justifyContent: "center",
+      }}
+    >
+      {searched ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
           }}
-        />
-      </div>
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Box
+              component="img"
+              alt="YouTube Music logo"
+              src="https://upload.wikimedia.org/wikipedia/commons/d/d8/YouTubeMusic_Logo.png"
+              sx={{ width: "60px", height: "60px" }}
+            ></Box>
+            <Typography
+              variant="h4"
+              sx={{ display: "flex", fontWeight: "bold" }}
+            >
+              Search
+            </Typography>
+            <div>
+              <Search
+                onChange={(search) => {
+                  setSearch(search);
+                }}
+                value={search}
+              />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <div style={{ justifyContent: "center" }}>
+            <Box
+              component="img"
+              alt="YouTube Music logo"
+              src="https://upload.wikimedia.org/wikipedia/commons/d/d8/YouTubeMusic_Logo.png"
+              sx={{ width: "200px", height: "200px" }}
+            ></Box>
+          </div>
+          <Typography variant="h3">YouTube Music Search</Typography>
+          <div style={{ paddingBottom: "15px" }}>
+            <Search
+              onChange={(search) => {
+                setSearch(search);
+                setSearched(true);
+              }}
+            />
+          </div>
+        </div>
+      )}
       {data.songs?.map((item) => (
         <div
           style={{
             width: "80vw",
-            paddingLeft: "10vw",
-            paddingRight: "10wv",
           }}
         >
           <div
@@ -75,16 +123,35 @@ const Main = () => {
               }}
             >
               {item.artists?.map((artist) => (
-                <Button variant="text" sx={{ color: "black" }}>
+                <Link
+                  component="button"
+                  underline="none"
+                  onClick={() => {
+                    navigate(`/`);
+                  }}
+                  variant="text"
+                  sx={{ color: "black", fontSize: "1rem" }}
+                >
                   {artist.name}
-                </Button>
+                </Link>
               )) || ""}
             </div>
-            <Typography
-              sx={{ display: "flex", width: "25vw", justifyContent: "right" }}
+            <Link
+              component="button"
+              underline="none"
+              sx={{
+                display: "flex",
+                width: "25vw",
+                justifyContent: "right",
+                color: "black",
+                fontSize: "1rem",
+              }}
+              onClick={() => {
+                navigate(`/album/${item.album.album_id}`);
+              }}
             >
               {item.album.name}
-            </Typography>
+            </Link>
           </div>
           <Divider variant="middle" />
         </div>
