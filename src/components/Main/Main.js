@@ -1,4 +1,11 @@
-import { Box, Button, Divider, Link, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  Link,
+  Typography,
+} from "@mui/material";
 import Search from "../Search/Search";
 import { useEffect, useState } from "react";
 import musicDb from "../../services/api.service";
@@ -8,12 +15,14 @@ const Main = () => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [searched, setSearched] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const getSearch = async (searchStr) => {
+    setLoading(true);
     const url = `/v2/search?query=${searchStr}`;
     const resp = await musicDb.get(url);
     setData(resp.data.result);
-    console.log(resp.data.result);
+    setLoading(false);
   };
   const navigate = useNavigate();
 
@@ -21,13 +30,27 @@ const Main = () => {
     if (search) getSearch(search);
   }, [search]);
 
-  return (
+  return loading ? (
+    <div style={{ minHeight: "100vh", backgroundColor: "black" }}>
+      <Box
+        sx={{
+          paddingTop: "40vh",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress size={120} sx={{ color: "white" }} />
+      </Box>
+    </div>
+  ) : (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
-        padding: "10px 10vw 0 10vw",
+        padding: "0 10vw 0 10vw",
         justifyContent: "center",
+        minHeight: "100vh",
+        backgroundColor: "black",
       }}
     >
       {searched ? (
@@ -51,7 +74,12 @@ const Main = () => {
             ></Box>
             <Typography
               variant="h4"
-              sx={{ display: "flex", fontWeight: "bold" }}
+              sx={{
+                display: "flex",
+                fontWeight: "bold",
+                color: "white",
+                paddingRight: "2vw",
+              }}
             >
               Search
             </Typography>
@@ -66,8 +94,14 @@ const Main = () => {
           </div>
         </div>
       ) : (
-        <div>
-          <div style={{ justifyContent: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <div style={{ justifyContent: "center", display: "flex" }}>
             <Box
               component="img"
               alt="YouTube Music logo"
@@ -75,8 +109,19 @@ const Main = () => {
               sx={{ width: "200px", height: "200px" }}
             ></Box>
           </div>
-          <Typography variant="h3">YouTube Music Search</Typography>
-          <div style={{ paddingBottom: "15px" }}>
+          <Typography
+            variant="h3"
+            sx={{ color: "white", paddingBottom: "4vh" }}
+          >
+            YouTube Music Search
+          </Typography>
+          <div
+            style={{
+              paddingBottom: "15px",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
             <Search
               onChange={(search) => {
                 setSearch(search);
@@ -111,6 +156,7 @@ const Main = () => {
                 width: "21vw",
                 paddingLeft: "2vw",
                 paddingRight: "2vw",
+                color: "white",
               }}
             >
               {item.title}
@@ -127,10 +173,10 @@ const Main = () => {
                   component="button"
                   underline="none"
                   onClick={() => {
-                    navigate(`/`);
+                    navigate(`/artist/${artist.artist_id}`);
                   }}
                   variant="text"
-                  sx={{ color: "black", fontSize: "1rem" }}
+                  sx={{ color: "white", fontSize: "1rem" }}
                 >
                   {artist.name}
                 </Link>
@@ -143,7 +189,7 @@ const Main = () => {
                 display: "flex",
                 width: "25vw",
                 justifyContent: "right",
-                color: "black",
+                color: "white",
                 fontSize: "1rem",
               }}
               onClick={() => {

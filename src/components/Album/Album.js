@@ -1,6 +1,12 @@
-import { Box, Divider, List, ListItem, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Divider,
+  Link,
+  Typography,
+} from "@mui/material";
 import musicDb from "../../services/api.service";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 const Album = () => {
@@ -9,18 +15,27 @@ const Album = () => {
   const [loading, setLoading] = useState(false);
   const getAlbum = async () => {
     setLoading(true);
-    const resp = await musicDb.get(`/v2/get_album?album_id=${params.id}`);
+    const resp = await musicDb.get(`/v2/get_album?album_id=${params.albumId}`);
     setAlbum(resp.data.result);
     setLoading(false);
   };
+  const navigate = useNavigate();
   useEffect(() => {
     getAlbum();
   }, []);
 
   return (
-    <div>
+    <div style={{ backgroundColor: "black", minHeight: "100vh" }}>
       {loading ? (
-        <Typography variant="h1">Loading...</Typography>
+        <Box
+          sx={{
+            paddingTop: "40vh",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <CircularProgress size={120} sx={{ color: "white" }} />
+        </Box>
       ) : (
         <div>
           <div style={{ display: "flex", padding: "40px 10vw 20px 10vw" }}>
@@ -39,16 +54,33 @@ const Album = () => {
                 paddingLeft: "1vw",
               }}
             >
-              <Typography variant="h3" style={{ display: "flex" }}>
+              <div style={{ marginBottom: "auto" }}></div>
+              <Typography
+                variant="h3"
+                style={{
+                  display: "flex",
+                  color: "white",
+                  fontWeight: "bold",
+                  paddingBottom: "10px",
+                }}
+              >
                 {album.title}
               </Typography>
               {album.artists?.map((item) => (
-                <Typography variant="h4" sx={{ display: "flex" }}>
+                <Link
+                  component="button"
+                  variant="h4"
+                  underline="none"
+                  sx={{ display: "flex", color: "white", paddingBottom: "5px" }}
+                  onClick={() => {
+                    navigate(`/artist/${item.artist_id}`);
+                  }}
+                >
                   {item.name}
-                </Typography>
+                </Link>
               )) || ""}
               <div style={{ display: "flex" }}>
-                <Typography sx={{ display: "flex" }}>
+                <Typography sx={{ display: "flex", color: "white" }}>
                   Released: {album.year}
                 </Typography>
               </div>
@@ -71,7 +103,9 @@ const Album = () => {
                     alignItems: "center",
                   }}
                 >
-                  <Typography key={index}>{index + 1}.</Typography>
+                  <Typography key={index} sx={{ color: "white" }}>
+                    {index + 1}.
+                  </Typography>
                   <div
                     style={{
                       flexGrow: 1,
@@ -79,16 +113,16 @@ const Album = () => {
                       justifyContent: "left",
                     }}
                   >
-                    <Typography sx={{ display: "flex" }}>
+                    <Typography sx={{ display: "flex", color: "white" }}>
                       {item.title}
                     </Typography>
                   </div>
-                  <Typography key={item.id}>
+                  <Typography key={item.id} sx={{ color: "white" }}>
                     {Math.floor(item.duration / 60)}:
                     {(item.duration % 60).toString().padStart(2, "0")}
                   </Typography>
                 </div>
-                <Divider variant="middle" />
+                <Divider variant="middle" light={true} />
               </div>
             ))}
           </div>
